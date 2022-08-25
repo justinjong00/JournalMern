@@ -1,11 +1,14 @@
 const asyncHandler = require("express-async-handler");
 
+const Entry = require("../models/entryModel");
+
 // @desc        Get entries
 // @route       Get /api/entries
 // @access      Private
 
 const getEntries = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Get entries" });
+  const entries = await Entry.find();
+  res.status(200).json(entries);
 });
 
 // @desc        Set entry
@@ -17,7 +20,12 @@ const setEntry = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Please add a text field");
   }
-  res.status(200).json({ message: "Set entries" });
+
+  const entry = await Entry.create({
+    text: req.body.text,
+  });
+
+  res.status(200).json(entry);
 });
 
 // @desc        Update entry
@@ -25,6 +33,17 @@ const setEntry = asyncHandler(async (req, res) => {
 // @access      Private
 
 const updateEntry = asyncHandler(async (req, res) => {
+  const entry = await Entry.findById(req.params.id);
+
+  if (!entry) {
+    res.status(400);
+    throw new Error("Entry not found");
+  }
+
+  const updatedEntry = await Entry.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
   res.status(200).json({ message: `Update entry ${req.params.id}` });
 });
 
@@ -33,7 +52,15 @@ const updateEntry = asyncHandler(async (req, res) => {
 // @access      Private
 
 const deleteEntry = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: `Delete entry ${req.params.id}` });
+  const entry = await Entry.findById(req.params.id);
+
+  if (!entry) {
+    res.status(400);
+    throw new Error("Entry not found");
+  }
+
+  await entry.remove();
+  res.status(200).json({ id: req.params.id });
 });
 
 module.exports = {
