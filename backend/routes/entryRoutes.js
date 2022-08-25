@@ -9,7 +9,9 @@ const {
   deleteEntry,
 } = require("../controllers/entryController");
 
-router.route("/").get(getEntries).post(setEntry);
-router.route("/:id").delete(deleteEntry).put(updateEntry);
+const { protect } = require("../middleware/authMiddleware");
+
+router.route("/").get(protect, getEntries).post(protect, setEntry);
+router.route("/:id").delete(protect, deleteEntry).put(protect, updateEntry);
 
 module.exports = router;
