@@ -11,6 +11,14 @@ const entrySchema = mongoose.Schema(
       type: String,
       required: [true, "Please add a text value"],
     },
+    song: {
+      type: String,
+      required: false,
+    },
+    artist: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,
